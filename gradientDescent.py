@@ -125,7 +125,7 @@ def create_path(gradient):
     """
     generate a path from the input potential function
     """
-
+    
     pass
 
 if __name__ == "__main__":
