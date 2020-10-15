@@ -70,6 +70,27 @@ def repulsive_function(obstacles,xlimits,ylimits):
         pass
     return func
 
+def centriod_repulsive(obstacles,xlimits,ylimits):
+    """
+    trial
+    """
+    xspace=np.linspace(xlimits[0],xlimits[1],grid)
+    yspace=np.linspace(ylimits[0],ylimits[1],grid)
+    func=np.zeros((len(xspace),len(yspace)))
+    scale=200
+    for x in range(len(xspace)):
+        for y in range(len(yspace)):
+            for obs in obstacles:
+                centroid=np.average(obs,axis=1)
+                dist=np.sqrt((xspace[x]-centroid[0])**2+(yspace[y]-centroid[1])**2)
+                if dist<=6:
+                    func[x][y]=scale/dist**2
+                    pass
+                pass
+            pass
+        pass
+    return func
+
 def points_on_obstacles(obstacles):
     """
     returns an np-array of all the points on the boundary obstacle
@@ -146,7 +167,10 @@ def create_path(gradient,qstart):
             pass
         pass
     direction=np.array([np.radians(0),np.radians(45),np.radians(90),np.radians(135),np.radians(179.9),np.radians(-179.9),np.radians(-135),np.radians(-90),np.radians(-45)])
-    for number in range(70):
+    newimin=imin
+    newjmin=jmin
+    # for number in range(45):
+    while np.sqrt((qgoal[0]-xlinspace[newimin])**2+(qgoal[1]-ylinspace[newjmin])**2)>=1:
         adist=np.array([])
         angle=np.arctan2(gradient[1][imin][jmin],gradient[0][imin][jmin])
         for a in direction:
@@ -206,22 +230,22 @@ def create_path(gradient,qstart):
 
 if __name__ == "__main__":
 
-    xlimits=(2,11)
-    ylimits=(-3,3)
-    qstart=(0,0)
-    qgoal=(10,0)
-    obstacles=[[(3.5,4.5,4.5,3.5),(0.5,0.5,1.5,1.5)],
-               [(6.5,7.5,7.5,6.5),(-1.5,-1.5,-0.5,-0.5)]]
-
-    # xlimits=(-2,15)
-    # ylimits=(-2,15)
+    # xlimits=(2,11)
+    # ylimits=(-3,3)
     # qstart=(0,0)
-    # qgoal=(10,10)
-    # obstacles=[[(1,2,2,1),(1,1,5,5)],
-    #            [(3,4,4,3),(4,4,12,12)],
-    #            [(3,12,12,3),(12,12,13,13)],
-    #            [(12,13,13,12),(5,5,13,13)],
-    #            [(6,12,12,6),(5,5,6,6)]]
+    # qgoal=(10,0)
+    # obstacles=[[(3.5,4.5,4.5,3.5),(0.5,0.5,1.5,1.5)],
+    #            [(6.5,7.5,7.5,6.5),(-1.5,-1.5,-0.5,-0.5)]]
+
+    xlimits=(-2,15)
+    ylimits=(-2,15)
+    qstart=(0,0)
+    qgoal=(10,10)
+    obstacles=[[(1,2,2,1),(1,1,5,5)],
+               [(3,4,4,3),(4,4,12,12)],
+               [(3,12,12,3),(12,12,13,13)],
+               [(12,13,13,12),(5,5,13,13)],
+               [(6,12,12,6),(5,5,6,6)]]
 
     # xlimits=(-10,40)
     # ylimits=(-8,8)
@@ -239,14 +263,15 @@ if __name__ == "__main__":
 
     grid=50 # number of points on the workspace
     dstar=3
-    qstar=1
+    qstar=0.5
 
     xlinspace=np.linspace(xlimits[0],xlimits[1],grid)
     ylinspace=np.linspace(ylimits[0],ylimits[1],grid)
 
     a=attractive_function(qgoal[0],qgoal[1],xlimits,ylimits)
     r=repulsive_function(obstacles,xlimits,ylimits)
-    total=a+r
+    c=centriod_repulsive(obstacles,xlimits,ylimits)
+    total=a+r+c
     
     figure, axes = plt.subplots()
     gradient=np.gradient(-total)

@@ -92,7 +92,7 @@ def update(grid,number):
             pass
         pass
     ax.cla()
-    plt.imshow(grid.T)
+    plt.imshow(grid.T,extent=[0,360,0,360])
     plt.pause(0.01)
     return grid
 
@@ -117,7 +117,7 @@ def find_path(grid,number):
             snapy=np.append(snapy,j)
             distance=distance+gridsizex
             grid[(i)][j]=pathcolour
-            plt.imshow(grid.T)
+            plt.imshow(grid.T,extent=[0,360,0,360])
             plt.pause(0.01)
             number=number-1
             continue
@@ -128,7 +128,7 @@ def find_path(grid,number):
             snapy=np.append(snapy,j)
             distance=distance+gridsizex
             grid[(i)][j]=pathcolour
-            plt.imshow(grid.T)
+            plt.imshow(grid.T,extent=[0,360,0,360])
             plt.pause(0.01)
             number=number-1
             continue
@@ -139,7 +139,7 @@ def find_path(grid,number):
             snapy=np.append(snapy,j)
             distance=distance+gridsizey
             grid[(i)][j]=pathcolour
-            plt.imshow(grid.T)
+            plt.imshow(grid.T,extent=[0,360,0,360])
             plt.pause(0.01)
             number=number-1
             continue
@@ -150,7 +150,7 @@ def find_path(grid,number):
             snapy=np.append(snapy,j)
             distance=distance+gridsizey
             grid[(i)][j]=pathcolour
-            plt.imshow(grid.T)
+            plt.imshow(grid.T,extent=[0,360,0,360])
             plt.pause(0.01)
             number=number-1
             continue
@@ -164,20 +164,26 @@ def plot(a0,t0,a1,t1):
     x=[a0*(np.cos(t0)),a1*(np.cos(t0+t1))]
     y=[a0*(np.sin(t0)),a1*(np.sin(t0+t1))]
 
+    for i in obstacles:
+        plt.fill(np.transpose(i)[0],np.transpose(i)[1],color='blue')
+        pass
+
     plt.plot([0,x[0],x[0]+x[1]],[0,y[0],y[0]+y[1]],'bo',alpha=0.5)
 
     plt.plot([0,x[0],x[0]+x[1]],[0,y[0],y[0]+y[1]],'r-',alpha=0.5)
+
+    plt.pause(0.01)
     
     pass
 
 if __name__ == "__main__":
     # lines,obstacles=print_input()
-    m1=10
-    m2=10
+    m1=5
+    m2=5
     lines=[1,1]
-    obstacles=[[[0.25, 0.25], [0, 0.75], [-0.25, 0.25]]]
+    # obstacles=[[[0.25, 0.25], [0, 0.75], [-0.25, 0.25]]]
     # obstacles=[[[-0.25, 1.1],[-0.25, 2], [0.25, 2], [0.25, 1.1]],[[-2, -2], [-2, -1.8], [2, -1.8], [2,-2]]]
-    # obstacles=[[[-0.25, 1.1], [-0.25, 2], [0.25, 2], [0.25, 1.1]],[[-2, -0.5], [-2, -0.3], [2, -0.3], [2,-0.5]]]
+    obstacles=[[[-0.25, 1.1], [-0.25, 2], [0.25, 2], [0.25, 1.1]],[[-2, -0.5], [-2, -0.3], [2, -0.3], [2,-0.5]]]
     points=np.array([0,0])
     scatx=np.array([])
     scaty=np.array([])
@@ -247,18 +253,16 @@ if __name__ == "__main__":
             number=number+1
             pass
     snap=find_path(grid,number)
-    plt.imshow(grid.T)
-    plt.close()
+    plt.imshow(grid.T,extent=[0,360,0,360])
+    plt.figure(2)
     delete=np.arange(0,len(snap[0]),1.5).astype(int)
     snapx=np.delete(snap[0],delete)
     snapy=np.delete(snap[1],delete)
     plt.plot([0,1,2],[0,0,0],'bo')
     plt.plot([0,1,2],[0,0,0],'r-')
-    for i in obstacles:
-        plt.fill(np.transpose(i)[0],np.transpose(i)[1],color='blue')
-        pass
     for i in range(len(snapx)):
-        plot(lines[0],np.radians(snapx[i]*10),lines[1],np.radians(snapy[i]*10))
+        # plot(lines[0],np.radians(snap[0][i]*m1),lines[1],np.radians(snap[1][i]*m2))
+        plot(lines[0],np.radians(snapx[i]*m1),lines[1],np.radians(snapy[i]*m2))
         pass
     plt.plot([0,-1,-2],[0,0,0],'bo')
     plt.plot([0,-1,-2],[0,0,0],'r-')
