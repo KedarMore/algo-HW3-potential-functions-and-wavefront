@@ -134,8 +134,74 @@ def create_path(gradient,qstart):
     """
     generate a path from the input potential function
     """
-    # for i in :
-    #     pass
+    mindist=float('inf')
+    for i in range(len(xlinspace)):
+        for j in range(len(ylinspace)):
+            dist=np.sqrt((xlinspace[i]-qstart[0])**2+(ylinspace[j]-qstart[1])**2)
+            if dist<=mindist:
+                mindist=dist
+                imin=i
+                jmin=j
+                pass
+            pass
+        pass
+    direction=np.array([np.radians(0),np.radians(45),np.radians(90),np.radians(135),np.radians(179.9),np.radians(-179.9),np.radians(-135),np.radians(-90),np.radians(-45)])
+    for number in range(70):
+        adist=np.array([])
+        angle=np.arctan2(gradient[1][imin][jmin],gradient[0][imin][jmin])
+        for a in direction:
+            adist=np.append(adist,np.absolute(angle-a))
+            pass
+        dirmin=np.argmin(adist)
+        if dirmin==0:
+            # plt.plot((xlinspace[imin],xlinspace[imin+1]),(ylinspace[jmin],ylinspace[jmin]))
+            newimin=imin+1
+            newjmin=jmin
+            pass
+        if dirmin==1:
+            # plt.plot((xlinspace[imin],xlinspace[imin+1]),(ylinspace[jmin],ylinspace[jmin+1]))
+            newimin=imin+1
+            newjmin=jmin+1
+            pass
+        if dirmin==2:
+            # plt.plot((xlinspace[imin],xlinspace[imin]),(ylinspace[jmin],ylinspace[jmin+1]))
+            newimin=imin
+            newjmin=jmin+1
+            pass
+        if dirmin==3:
+            # plt.plot((xlinspace[imin],xlinspace[imin-1]),(ylinspace[jmin],ylinspace[jmin+1]))
+            newimin=imin-1
+            newjmin=jmin+1
+            pass
+        if dirmin==4:
+            # plt.plot((xlinspace[imin],xlinspace[imin-1]),(ylinspace[jmin],ylinspace[jmin]))
+            newimin=imin-1
+            newjmin=jmin
+            pass
+        if dirmin==5:
+            # plt.plot((xlinspace[imin],xlinspace[imin-1]),(ylinspace[jmin],ylinspace[jmin]))
+            newimin=imin-1
+            newjmin=jmin
+            pass
+        if dirmin==6:
+            # plt.plot((xlinspace[imin],xlinspace[imin-1]),(ylinspace[jmin],ylinspace[jmin-1]))
+            newimin=imin-1
+            newjmin=jmin-1
+            pass
+        if dirmin==7:
+            # plt.plot((xlinspace[imin],xlinspace[imin]),(ylinspace[jmin],ylinspace[jmin-1]))
+            newimin=imin
+            newjmin=jmin-1
+            pass
+        if dirmin==8:
+            # plt.plot((xlinspace[imin],xlinspace[imin+1]),(ylinspace[jmin],ylinspace[jmin-1]))
+            newimin=imin+1
+            newjmin=jmin-1
+            pass
+        plt.plot((xlinspace[imin],xlinspace[newimin]),(ylinspace[jmin],ylinspace[newjmin]))
+        imin=newimin
+        jmin=newjmin
+        pass
     pass
 
 if __name__ == "__main__":
@@ -173,7 +239,7 @@ if __name__ == "__main__":
 
     grid=50 # number of points on the workspace
     dstar=3
-    qstar=0.5
+    qstar=1
 
     xlinspace=np.linspace(xlimits[0],xlimits[1],grid)
     ylinspace=np.linspace(ylimits[0],ylimits[1],grid)
@@ -185,6 +251,7 @@ if __name__ == "__main__":
     figure, axes = plt.subplots()
     gradient=np.gradient(-total)
     plot_gradient(gradient)
+    create_path(gradient,qstart)
     axes.add_artist(plt.Circle(qgoal,dstar/2,alpha=0.5))
     for obs in obstacles:
         axes.add_artist(plt.Rectangle((obs[0][0],obs[1][0]),(obs[0][1]-obs[0][0]),(obs[1][2]-obs[1][0]),alpha=0.9))
