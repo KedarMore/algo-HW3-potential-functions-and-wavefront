@@ -23,12 +23,12 @@ def attractive_function(xgoal,ygoal,xlimits,ylimits):
     xspace=np.linspace(xlimits[0],xlimits[1],grid)
     yspace=np.linspace(ylimits[0],ylimits[1],grid)
     func=np.zeros((len(xspace),len(yspace)))
-    scale=10
+    scale=2.75
     for x in range(len(xspace)):
         for y in range(len(yspace)):
             dist=np.sqrt((xspace[x]-xgoal)**2+(yspace[y]-ygoal)**2)
             if inside_obstacle((xspace[x],yspace[y]),obstacles)==1:
-                func[x][y]=100000
+                func[x][y]=1000
                 pass
             else:
                 if dist<=dstar:
@@ -52,18 +52,21 @@ def repulsive_function(obstacles,xlimits,ylimits):
     xspace=np.linspace(xlimits[0],xlimits[1],grid)
     yspace=np.linspace(ylimits[0],ylimits[1],grid)
     func=np.zeros((len(xspace),len(yspace)))
-    scale=500
+    scale=50
     for x in range(len(xspace)):
         for y in range(len(yspace)):
-            dist,obs=leastdist_from_obstacle(xspace[x],yspace[y],obstacles)
-            if inside_obstacle((xspace[x],yspace[y]),obstacles)==1:
-                func[x][y]=1000
-                pass
-            else:
-                if qstar[obs]>dist:
-                    func[x][y]=(scale/2)*((1/qstar[obs])-(1/dist))**2
-                    # func[x][y]=scale*round(dist,2)
-                    # func[x][y]=100
+            # dist,obs=leastdist_from_obstacle(xspace[x],yspace[y],obstacles)
+            ldist=leastdist_from_obstacle(xspace[x],yspace[y],obstacles)
+            if len(ldist)==2:
+                if inside_obstacle((xspace[x],yspace[y]),obstacles)==1:
+                    func[x][y]=100
+                    pass
+                else:
+                    # if qstar[obs]>dist:
+                    func[x][y]=(scale/2)*((1/qstar[ldist[1]])-(1/ldist[0]))**2
+                        # func[x][y]=scale*round(dist,2)
+                        # func[x][y]=100
+                        # pass
                     pass
                 pass
             pass
@@ -81,13 +84,13 @@ def centriod_repulsive(obstacles,xlimits,ylimits):
     for x in range(len(xspace)):
         for y in range(len(yspace)):
             if inside_obstacle((xspace[x],yspace[y]),obstacles)==1:
-                func[x][y]=1000
+                func[x][y]=0
                 pass
             else:
-                for obs in obstacles:
+                for i,obs in enumerate(obstacles):
                     centroid=np.average(obs,axis=1)
                     dist=np.sqrt((xspace[x]-centroid[0])**2+(yspace[y]-centroid[1])**2)
-                    if dist<=2.6:
+                    if dist<cr[i]:
                         func[x][y]=scale/dist**2
                         pass
                     pass
@@ -118,14 +121,36 @@ def leastdist_from_obstacle(x,y,obstacles):
     """
     listofpoints=points_on_obstacles(obstacles)
     mindist=float('inf')
+    # for i,points in enumerate(listofpoints):
+    #     dist=np.sqrt((x-points[0])**2+(y-points[1])**2)
+    #     if dist<mindist:
+    #         mindist=dist
+    #         obs=int(i/80)
+    #         pass
+    #     pass
+    # if mindist<qstar[obs]:
+    #     return mindist,obs
+    # else:
+    #     return [0]
+    obs=100
     for i,points in enumerate(listofpoints):
         dist=np.sqrt((x-points[0])**2+(y-points[1])**2)
-        if dist<mindist:
-            mindist=dist
-            obs=int(i/80)
+        if dist<qstar[int(i/80)]:
+            for j in range(int(i/80)*80,(int(i/80)+1)*80):
+                dist=np.sqrt((x-listofpoints[j][0])**2+(y-listofpoints[j][1])**2)
+                if dist<mindist:
+                    obs=int(i/80)
+                    # print(obs)
+                    mindist=dist
+                    pass
+                pass
             pass
         pass
-    return mindist,obs
+    if obs!=100:
+        return mindist,obs
+    else:
+        return [0]
+    
 
 def plot_gradient(gradient):
     """
@@ -176,8 +201,11 @@ def create_path(gradient,qstart):
     direction=np.array([np.radians(0),np.radians(45),np.radians(90),np.radians(135),np.radians(179.9),np.radians(-179.9),np.radians(-135),np.radians(-90),np.radians(-45)])
     newimin=imin
     newjmin=jmin
-    for number in range(45):
-    # while np.sqrt((qgoal[0]-xlinspace[newimin])**2+(qgoal[1]-ylinspace[newjmin])**2)>=1:
+    distance=0.
+    plt.plot((xlinspace[imin],qstart[0]),(ylinspace[jmin],qstart[1]),'r',linewidth=3)
+    distance=distance+mindist
+    for number in range(55):
+    # while np.sqrt((qgoal[0]-xlinspace[newimin])**2+(qgoal[1]-ylinspace[newjmin])**2)>=0.25:
         adist=np.array([])
         angle=np.arctan2(gradient[1][imin][jmin],gradient[0][imin][jmin])
         for a in direction:
@@ -220,49 +248,55 @@ def create_path(gradient,qstart):
             newimin=imin+1
             newjmin=jmin-1
             pass
-        plt.plot((xlinspace[imin],xlinspace[newimin]),(ylinspace[jmin],ylinspace[newjmin]))
+        plt.plot((xlinspace[imin],xlinspace[newimin]),(ylinspace[jmin],ylinspace[newjmin]),'r',linewidth=3)
+        distance=distance+np.sqrt((xlinspace[imin]-xlinspace[newimin])**2+(ylinspace[jmin]-ylinspace[newjmin])**2)
         imin=newimin
         jmin=newjmin
         pass
-    pass
+    # plt.plot((xlinspace[imin],qgoal[0]),(ylinspace[jmin],qgoal[1]),'r',linewidth=3)
+    # distance=distance+np.sqrt((xlinspace[imin]-qgoal[0])**2+(ylinspace[jmin]-qgoal[1])**2)
+    return distance
 
 if __name__ == "__main__":
 
-    # xlimits=(2,11)
+    # xlimits=(-1,11)
     # ylimits=(-3,3)
     # qstart=(0,0)
     # qgoal=(10,0)
     # obstacles=[[(3.5,4.5,4.5,3.5),(0.5,0.5,1.5,1.5)],
     #            [(6.5,7.5,7.5,6.5),(-1.5,-1.5,-0.5,-0.5)]]
+    # qstar=[0.25,0.25]
 
-    xlimits=(-2,15)
-    ylimits=(-2,15)
-    qstart=(0,0)
-    qgoal=(10,10)
-    obstacles=[[(1,2,2,1),(1,1,5,5)],
-               [(3,4,4,3),(4,4,12,12)],
-               [(3,12,12,3),(12,12,13,13)],
-               [(12,13,13,12),(5,5,13,13)],
-               [(6,12,12,6),(5,5,6,6)]]
-    qstar=[0.25,0.25,0.25,0.25,1.]
-
-    # xlimits=(-10,40)
-    # ylimits=(-8,8)
+    # xlimits=(-2,15)
+    # ylimits=(-2,15)
     # qstart=(0,0)
-    # qgoal=(35,0)
-    # obstacles=[[(-6,25,25,-6),(-6,-6,-5,-5)],
-    #            [(-6,30,30,-6),(5,5,6,6)],
-    #            [(-6,-5,-5,-6),(-5,-5,5,5)],
-    #            [(4,5,5,4),(-5,-5,1,1)],
-    #            [(9,10,10,9),(0,0,5,5)],
-    #            [(14,15,15,14),(-5,-5,1,1)],
-    #            [(19,20,20,19),(0,0,5,5)],
-    #            [(24,25,25,24),(-5,-5,1,1)],
-    #            [(29,30,30,29),(0,0,5,5)]]
+    # qgoal=(10,10)
+    # obstacles=[[(1,2,2,1),(1,1,5,5)],
+    #            [(3,4,4,3),(4,4,12,12)],
+    #            [(3,12,12,3),(12,12,13,13)],
+    #            [(12,13,13,12),(5,5,13,13)],
+    #            [(6,12,12,6),(5,5,6,6)]]
+    # qstar=[0.5,0.5,0.5,0.5,0.5]
+
+    xlimits=(-10,40)
+    ylimits=(-8,8)
+    qstart=(0,0)
+    qgoal=(35,0)
+    obstacles=[[(-6,25,25,-6),(-6,-6,-5,-5)],
+               [(-6,30,30,-6),(5,5,6,6)],
+               [(-6,-5,-5,-6),(-5,-5,5,5)],
+               [(4,5,5,4),(-5,-5,1,1)],
+               [(9,10,10,9),(0,0,5,5)],
+               [(14,15,15,14),(-5,-5,1,1)],
+               [(19,20,20,19),(0,0,5,5)],
+               [(24,25,25,24),(-5,-5,1,1)],
+               [(29,30,30,29),(0,0,5,5)]]
+    qstar=[2,2,3,1,1,1,1,1,1]
+    cr=[5,5,7,5,5,5,5,5,5]
+    # cr=2
 
     grid=50 # number of points on the workspace
     dstar=10
-    # qstar=0.25
 
     xlinspace=np.linspace(xlimits[0],xlimits[1],grid)
     ylinspace=np.linspace(ylimits[0],ylimits[1],grid)
@@ -272,8 +306,15 @@ if __name__ == "__main__":
     c=centriod_repulsive(obstacles,xlimits,ylimits)
     total=a+r+c
     
-    figure, axes = plt.subplots()
     gradient=np.gradient(-total)
+
+    # fig=plt.figure()
+    # ax = fig.gca(projection='3d')
+    # xlinspace, ylinspace = np.meshgrid(xlinspace, ylinspace)
+    # ax.plot_surface(xlinspace,ylinspace,total.T)
+    # plt.show()
+    # raise NotImplementedError
+    figure, axes = plt.subplots()
     plot_gradient(gradient)
     # axes.add_artist(plt.Circle(qgoal,dstar/2,alpha=0.5))
     # for obs in obstacles:
@@ -282,7 +323,8 @@ if __name__ == "__main__":
     #     pass
     # plt.figure(2)
     # figure, axes = plt.subplots()
-    create_path(gradient,qstart)
+    dist=create_path(gradient,qstart)
+    print("Total distance is:",dist)
     axes.add_artist(plt.Circle(qgoal,dstar/2,alpha=0.5))
     for i,obs in enumerate(obstacles):
         axes.add_artist(plt.Rectangle((obs[0][0],obs[1][0]),(obs[0][1]-obs[0][0]),(obs[1][2]-obs[1][0]),alpha=0.9))

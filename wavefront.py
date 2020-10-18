@@ -109,22 +109,22 @@ def find_path(grid,number):
 
 if __name__ == "__main__":
 
-    # xlimits=(-2,12)
-    # ylimits=(-5,5)
-    # qstart=(0,0)
-    # qgoal=(10,0)
-    # obstacles=[[(3.5,4.5,4.5,3.5),(0.5,0.5,1.5,1.5)],
-    #            [(6.5,7.5,7.5,6.5),(-1.5,-1.5,-0.5,-0.5)]]
-
-    xlimits=(-2,15)
-    ylimits=(-2,15)
+    xlimits=(-2,12)
+    ylimits=(-5,5)
     qstart=(0,0)
-    qgoal=(10,10)
-    obstacles=[[(1,2,2,1),(1,1,5,5)],
-               [(3,4,4,3),(4,4,12,12)],
-               [(3,12,12,3),(12,12,13,13)],
-               [(12,13,13,12),(5,5,13,13)],
-               [(6,12,12,6),(5,5,6,6)]]
+    qgoal=(10,0)
+    obstacles=[[(3.5,4.5,4.5,3.5),(0.5,0.5,1.5,1.5)],
+               [(6.5,7.5,7.5,6.5),(-1.5,-1.5,-0.5,-0.5)]]
+
+    # xlimits=(-2.,15.)
+    # ylimits=(-2.,15.)
+    # qstart=(0.00,0.00)
+    # qgoal=(10.00,10.00)
+    # obstacles=[[(1,2,2,1),(1,1,5,5)],
+    #            [(3,4,4,3),(4,4,12,12)],
+    #            [(3,12,12,3),(12,12,13,13)],
+    #            [(12,13,13,12),(5,5,13,13)],
+    #            [(6,12,12,6),(5,5,6,6)]]
 
     # xlimits=(-10,40)
     # ylimits=(-8,8)
@@ -140,10 +140,12 @@ if __name__ == "__main__":
     #            [(24,25,25,24),(-5,-5,1,1)],
     #            [(29,30,30,29),(0,0,5,5)]]
 
-    gridsize=0.25
+    gridsize=0.1
 
     xspace=np.arange(xlimits[0],xlimits[1],gridsize)
+    xspace=np.round(xspace,2)
     yspace=np.arange(ylimits[1],ylimits[0],-gridsize)
+    yspace=np.round(yspace,2)
     grid=assign_values(qgoal,xlimits,ylimits)
     fig,ax=plt.subplots()
     number=2
@@ -151,15 +153,14 @@ if __name__ == "__main__":
         newgrid=update(grid,number)
         if len(newgrid)==2:
             grid,number=newgrid
-            print("found qstart")
+            print("found qstart on step number",number)
             break
         else:
             grid=newgrid
             number=number+1
             pass
-    print(number)
     dist=find_path(grid,number)
-    print("Total distace of the path is:",dist)
+    print("Total distace of the path is:",np.round(dist,2))
     plt.imshow(grid.T,extent=[xlimits[0],xlimits[1],ylimits[0],ylimits[1]])
     plt.show()
     pass

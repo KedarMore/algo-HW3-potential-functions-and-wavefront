@@ -255,7 +255,7 @@ if __name__ == "__main__":
     snap=find_path(grid,number)
     plt.imshow(grid.T,extent=[0,360,0,360])
     plt.figure(2)
-    delete=np.arange(0,len(snap[0]),1.5).astype(int)
+    delete=np.arange(0,len(snap[0]),1.2).astype(int)
     snapx=np.delete(snap[0],delete)
     snapy=np.delete(snap[1],delete)
     plt.plot([0,1,2],[0,0,0],'bo')
