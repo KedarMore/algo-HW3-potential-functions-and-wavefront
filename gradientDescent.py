@@ -23,7 +23,7 @@ def attractive_function(xgoal,ygoal,xlimits,ylimits):
     xspace=np.linspace(xlimits[0],xlimits[1],grid)
     yspace=np.linspace(ylimits[0],ylimits[1],grid)
     func=np.zeros((len(xspace),len(yspace)))
-    scale=2.75
+    scale=33.3
     for x in range(len(xspace)):
         for y in range(len(yspace)):
             dist=np.sqrt((xspace[x]-xgoal)**2+(yspace[y]-ygoal)**2)
@@ -52,7 +52,7 @@ def repulsive_function(obstacles,xlimits,ylimits):
     xspace=np.linspace(xlimits[0],xlimits[1],grid)
     yspace=np.linspace(ylimits[0],ylimits[1],grid)
     func=np.zeros((len(xspace),len(yspace)))
-    scale=50
+    scale=25
     for x in range(len(xspace)):
         for y in range(len(yspace)):
             # dist,obs=leastdist_from_obstacle(xspace[x],yspace[y],obstacles)
@@ -80,7 +80,7 @@ def centriod_repulsive(obstacles,xlimits,ylimits):
     xspace=np.linspace(xlimits[0],xlimits[1],grid)
     yspace=np.linspace(ylimits[0],ylimits[1],grid)
     func=np.zeros((len(xspace),len(yspace)))
-    scale=500
+    scale=1000
     for x in range(len(xspace)):
         for y in range(len(yspace)):
             if inside_obstacle((xspace[x],yspace[y]),obstacles)==1:
@@ -204,8 +204,8 @@ def create_path(gradient,qstart):
     distance=0.
     plt.plot((xlinspace[imin],qstart[0]),(ylinspace[jmin],qstart[1]),'r',linewidth=3)
     distance=distance+mindist
-    for number in range(55):
-    # while np.sqrt((qgoal[0]-xlinspace[newimin])**2+(qgoal[1]-ylinspace[newjmin])**2)>=0.25:
+    # for number in range(50):
+    while np.sqrt((qgoal[0]-xlinspace[newimin])**2+(qgoal[1]-ylinspace[newjmin])**2)>=0.25:
         adist=np.array([])
         angle=np.arctan2(gradient[1][imin][jmin],gradient[0][imin][jmin])
         for a in direction:
@@ -253,8 +253,8 @@ def create_path(gradient,qstart):
         imin=newimin
         jmin=newjmin
         pass
-    # plt.plot((xlinspace[imin],qgoal[0]),(ylinspace[jmin],qgoal[1]),'r',linewidth=3)
-    # distance=distance+np.sqrt((xlinspace[imin]-qgoal[0])**2+(ylinspace[jmin]-qgoal[1])**2)
+    plt.plot((xlinspace[imin],qgoal[0]),(ylinspace[jmin],qgoal[1]),'r',linewidth=3)
+    distance=distance+np.sqrt((xlinspace[imin]-qgoal[0])**2+(ylinspace[jmin]-qgoal[1])**2)
     return distance
 
 if __name__ == "__main__":
@@ -267,36 +267,36 @@ if __name__ == "__main__":
     #            [(6.5,7.5,7.5,6.5),(-1.5,-1.5,-0.5,-0.5)]]
     # qstar=[0.25,0.25]
 
-    # xlimits=(-2,15)
-    # ylimits=(-2,15)
-    # qstart=(0,0)
-    # qgoal=(10,10)
-    # obstacles=[[(1,2,2,1),(1,1,5,5)],
-    #            [(3,4,4,3),(4,4,12,12)],
-    #            [(3,12,12,3),(12,12,13,13)],
-    #            [(12,13,13,12),(5,5,13,13)],
-    #            [(6,12,12,6),(5,5,6,6)]]
-    # qstar=[0.5,0.5,0.5,0.5,0.5]
-
-    xlimits=(-10,40)
-    ylimits=(-8,8)
+    xlimits=(-2,15)
+    ylimits=(-2,15)
     qstart=(0,0)
-    qgoal=(35,0)
-    obstacles=[[(-6,25,25,-6),(-6,-6,-5,-5)],
-               [(-6,30,30,-6),(5,5,6,6)],
-               [(-6,-5,-5,-6),(-5,-5,5,5)],
-               [(4,5,5,4),(-5,-5,1,1)],
-               [(9,10,10,9),(0,0,5,5)],
-               [(14,15,15,14),(-5,-5,1,1)],
-               [(19,20,20,19),(0,0,5,5)],
-               [(24,25,25,24),(-5,-5,1,1)],
-               [(29,30,30,29),(0,0,5,5)]]
-    qstar=[2,2,3,1,1,1,1,1,1]
-    cr=[5,5,7,5,5,5,5,5,5]
-    # cr=2
+    qgoal=(10,10)
+    obstacles=[[(1,2,2,1),(1,1,5,5)],
+               [(3,4,4,3),(4,4,12,12)],
+               [(3,12,12,3),(12,12,13,13)],
+               [(12,13,13,12),(5,5,13,13)],
+               [(6,12,12,6),(5,5,6,6)]]
+    qstar=[1,1,1,1,1]
+    cr=[7,7,7,7,7]
+
+    # xlimits=(-10,40)
+    # ylimits=(-8,8)
+    # qstart=(0,0)
+    # qgoal=(35,0)
+    # obstacles=[[(-6,25,25,-6),(-6,-6,-5,-5)],
+    #            [(-6,30,30,-6),(5,5,6,6)],
+    #            [(-6,-5,-5,-6),(-5,-5,5,5)],
+    #            [(4,5,5,4),(-5,-5,1,1)],
+    #            [(9,10,10,9),(0,0,5,5)],
+    #            [(14,15,15,14),(-5,-5,1,1)],
+    #            [(19,20,20,19),(0,0,5,5)],
+    #            [(24,25,25,24),(-5,-5,1,1)],
+    #            [(29,30,30,29),(0,0,5,5)]]
+    # qstar=[4,4,0.1,0.1,0.1,0.1,0.1,0.1,0.1]
+    # cr=[15,15,4,4,5,5,5,5,5]
 
     grid=50 # number of points on the workspace
-    dstar=10
+    dstar=1
 
     xlinspace=np.linspace(xlimits[0],xlimits[1],grid)
     ylinspace=np.linspace(ylimits[0],ylimits[1],grid)
