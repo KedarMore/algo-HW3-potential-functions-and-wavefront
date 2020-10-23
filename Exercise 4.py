@@ -35,28 +35,6 @@ def param_line(point1,point2):
     ans=np.vstack((x,y))
     return np.transpose(ans)
 
-def print_input():
-    """
-    docstring
-    """
-    a0=float(input("\nEnter the Length of first link: "))
-    a1=float(input("\nEnter the Length of second link: "))
-    lines=[a0,a1]
-    noofobstacles=int(input("\nNumber of Obstacles?"))
-    obstacles=[]
-    for i in range(noofobstacles):
-        vertex=int(input("\nNumber of Vertices on obstacle "+str(i+1)+"?"))
-        v1=[]
-        for j in range(vertex):
-            v2=[]
-            v2.append(float(input("\nx Coordinates of vertex "+str(j+1)+"?")))
-            v2.append(float(input("\ny Coordinates of vertex "+str(j+1)+"?")))
-            v1.append(v2)
-            pass
-        obstacles.append(v1)
-        pass
-    return lines, obstacles
-
 def assign_values_nonrectangle(xdegs,ydegs,qgoal):
     """
     assigns initial values to the grid
@@ -187,6 +165,7 @@ if __name__ == "__main__":
     points=np.array([0,0])
     scatx=np.array([])
     scaty=np.array([])
+    print("Calculating C-space...")
     for theta1 in tqdm(range(int(360/m1)+1)):
         if theta1*m1==0:
             np.seterr(divide='ignore')
@@ -246,7 +225,7 @@ if __name__ == "__main__":
         newgrid=update(grid,number)
         if len(newgrid)==2:
             grid,number=newgrid
-            print("found qstart")
+            print("found qstart on step number",number)
             break
         else:
             grid=newgrid
@@ -263,6 +242,8 @@ if __name__ == "__main__":
     for i in range(len(snapx)):
         # plot(lines[0],np.radians(snap[0][i]*m1),lines[1],np.radians(snap[1][i]*m2))
         plot(lines[0],np.radians(snapx[i]*m1),lines[1],np.radians(snapy[i]*m2))
+        # print(snapx[i]*m1)
+        # print(snapy[i]*m2)
         pass
     plt.plot([0,-1,-2],[0,0,0],'bo')
     plt.plot([0,-1,-2],[0,0,0],'r-')
